@@ -73,6 +73,8 @@ def test_data_single(real_values, real_targets):
     alpha = 0.01
     real_cov = real_values.cov()
     diff = 0
+    label_list = []
+    tetrad_list = []
     for i in range(real_targets.shape[0]):
         targets = real_targets.iloc[i,:]
         i1 = 3 * i + 0
@@ -89,9 +91,12 @@ def test_data_single(real_values, real_targets):
 
             if label != tetrad:
                 diff += 1
+
+            tetrad_list.append(tetrad)
+            label_list.append(label)
     accuracy = 1 - (diff / (real_targets.shape[0] * 3))
 
-    return(accuracy)
+    return(accuracy, tetrad_list, label_list)
 
 
 def specific_tests():

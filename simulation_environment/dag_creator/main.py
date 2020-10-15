@@ -148,7 +148,7 @@ def spirtes_wishart():
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
     filename = 'wishart_experiment_samplesize'
-    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','best_accuracy','mean_accuracy','std_accuracy'],filename)
+    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
     acc_list = []
     best_acc = 0
     for product in itertools.product(list_n_samples, list_b, list_d):
@@ -156,11 +156,15 @@ def spirtes_wishart():
         generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, model)
         for n in range(10):
             values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
-            acc = test_data_single(values, targets)
-            acc_list.append(acc)
-            if acc > best_acc: best_acc = acc
-        csv.exp_write_csv([False, b,d, n_samples, best_acc, statistics.mean(acc_list), statistics.pstdev(
-            acc_list)],filename)
+
+            acc, tetrad_list, label_list = test_data_single(values, targets)
+            cm = confusion_matrix(label_list, tetrad_list)
+            trueneg = cm[0, 0]
+            falseneg = cm[1, 0]
+            truepos = cm[1, 1]
+            falsepos = cm[0, 1]
+
+            csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos], filename)
 
     #This should test the Wishart test in the linear case.
     acc_list = []
@@ -173,11 +177,14 @@ def spirtes_wishart():
         for n in range(10):
             values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
-            acc = test_data_single(values, targets)
-            acc_list.append(acc)
-            if acc > best_acc: best_acc = acc
-        csv.exp_write_csv([True, b,d, n_samples, best_acc, statistics.mean(acc_list), statistics.pstdev(
-            acc_list)],filename)
+            acc, tetrad_list, label_list = test_data_single(values, targets)
+            cm = confusion_matrix(label_list, tetrad_list)
+            trueneg = cm[0, 0]
+            falseneg = cm[1, 0]
+            truepos = cm[1, 1]
+            falsepos = cm[0, 1]
+
+            csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
 
 
 if __name__ == "__main__":
