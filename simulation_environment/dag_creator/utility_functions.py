@@ -3,6 +3,25 @@ from graphviz import Digraph
 import numpy as np
 from t_separation import is_t_separated
 import graph_examples as ge
+import pandas as pd
+
+# Return a dictionary with (variable,data) key value pairs.
+def get_values(values_df, i, variables):
+    # Amount of each y in a row.
+    vl = round(values_df.shape[1] / 4)
+    var1 = np.array(values_df.iloc[i][0:vl])
+    var2 = np.array(values_df.iloc[i][vl:vl * 2])
+    var3 = np.array(values_df.iloc[i][vl * 2:vl * 3])
+    var4 = np.array(values_df.iloc[i][vl * 3:vl * 4])
+    values = pd.DataFrame(np.array([var1,var2,var3,var4]).T, columns=variables)
+    return(values)
+
+def restructure_dataframe(df, model):
+    m_model, s_model = model
+    return([single_val for val in sorted(set.union(*m_model.values())) for single_val in df[val].tolist()])
+
+def restructure_dataframe_specific_vars(df, vars):
+    return([single_val for val in vars for single_val in df[val].tolist()])
 
 # Source: https://stackoverflow.com/questions/5360220/how-to-split-a-list-into-pairs-in-all-possible-ways
 # All three unique ways to pick 2 groups of 2 out of 4.
@@ -23,15 +42,16 @@ def all_pairs(lst):
             for rest in all_pairs(lst[1:i]+lst[i+1:]):
                 yield [pair] + rest
 
-def tetrad_pairs():
+def tetrad_pairs(y1, y2, y3, y4):
     return([
-        [['y1','y2'],['y3','y4']],
-        [['y1','y3'],['y2','y4']],
-        [['y1','y4'],['y2','y3']]])
+        [[y1, y2], [y3, y4]],
+        [[y1, y3], [y2, y4]],
+        [[y1, y4], [y2, y3]]])
+
 
 # TODO function takes m_model for its values, but the function only works on
 # y variables at a time and not all y's at the same time.
-def find_t_separations(m_model, s_model):
+def find_t_separations(m_model, s_model, vars):
     nodes = set.union(*m_model.values(), m_model.keys(), *s_model.values(),
                       s_model.keys())
     index_dict = {}
@@ -51,7 +71,7 @@ def find_t_separations(m_model, s_model):
     t_separations = []
     # TODO these values are hardcoded, should change this.
     #for set_of_pairs in all_pairs(list(set.union(*m_model.values()))):
-    for set_of_pairs in tetrad_pairs():
+    for set_of_pairs in tetrad_pairs(vars[0], vars[1], vars[2], vars[3]):
         A = np.zeros(d, dtype=bool)
         B = np.zeros(d, dtype=bool)
         A[index_dict[set_of_pairs[0][0]]] = A[index_dict[set_of_pairs[0][1]]] = True
