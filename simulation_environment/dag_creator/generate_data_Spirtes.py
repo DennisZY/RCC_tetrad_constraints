@@ -7,6 +7,10 @@ import graph_examples
 import transform_input_data
 import csv_functions as csv
 import itertools
+from pathlib import Path
+
+train_path = Path("generate_data.nosync/")
+test_path = Path('simulated_data/')
 
 def noise(n):
     return(np.random.normal(0,1,n))
@@ -62,7 +66,7 @@ def calculate_values(vars, model, s_model_values, s_parents_dict,
 
 # Function to generate non linear data in a pandas dataframe. Proces is split
 #  in a structural and measurement part.
-def generate_data(m_model, s_model, n_samples, b, d=0, linear = True):
+def generate_data(m_model, s_model, n_samples, b, d, linear = True):
 
     exo_vars = set(s_model.keys()) - set([x for value in s_model.values() for x
                                         in value])
@@ -96,20 +100,19 @@ def generate_data(m_model, s_model, n_samples, b, d=0, linear = True):
     return(pd.DataFrame(measure_values, columns=measure_vars))
 
 # generate data as a normal table.
-def generate_data_basic(model = graph_examples.exampleSpirtes()):
+def generate_data_linear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
     m_model, s_model = model
-    # transform input data prepares a file with t-separations. Only enable when necessary, because it takes a very long time.
-    #transform_input_data.spirtes_data(m_model, s_model)
-    for b in [0,0.01,0.05]:
-        for n_samples in [5000]:
-            data = generate_data(m_model, s_model, n_samples, b)
-            data.to_csv('simulated_data\spirtes_random{}_samples{}.csv'.format(b,n_samples), index=False)
+    for n in range(10):
+        data = generate_data(m_model, s_model, n_samples, b, d, True)
+        data.to_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n),
+                    index=False)
 
 def generate_data_nonlinear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
     m_model, s_model = model
     for n in range(10):
         data = generate_data(m_model, s_model, n_samples, b, d, False)
-        data.to_csv('simulated_data\spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n), index=False)
+        data.to_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples,
+                                                                                         n), index=False)
 
 def generate_data_both():
     generate_data_nonlinear(graph_examples.exampleSpirtes())

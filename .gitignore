@@ -24,3 +24,9 @@ simulation_environment/dag_creator/fges-continuous.svg
 simulation_environment/dag_creator/py-causal-fges-continuous-example.py
 
 simulation_environment/data/
+
+simulation_environment/dag_creator/experiment_results_local/
+
+simulation_environment/dag_creator/experiment_results/experiment_larget_sample_trees_weights_results.csv
+
+simulation_environment/dag_creator/experiment_results/

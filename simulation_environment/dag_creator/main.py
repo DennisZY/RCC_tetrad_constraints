@@ -1,5 +1,4 @@
 import randomized_causation_coefficient as rcc
-import generate_data as gd
 import generate_data_Spirtes
 import numpy as np
 import time
@@ -10,12 +9,15 @@ from statistic_test import test_data, test_data_single
 import pandas as pd
 import statistics
 import transform_input_data
+from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier as RFC
 from sklearn.metrics import confusion_matrix
 
+train_path = Path("generated_data.nosync/")
+test_path = Path('simulated_data/')
 
 def main():
-    spirtes_nonlin()
+    spirtes_wishart()
 
 def poldem():
     # gd.generate_extra_training_data('spirtes', 100, 2400, 2, 3, 2.5, 0.5, 5)
@@ -88,10 +90,10 @@ def spirtes_nonlin():
     list_b = [0.05]
     list_d = [0.05]
     path = 'experiment_larget_sample_trees_weights'
-    list_E = [1000,2000,4000] #[500, 1000, 1500]
-    list_K = [400,800,1500] #[200, 400, 800]
+    list_E = [500]
+    list_K = [400]
     list_KME = ['4'] #['minimal', '4', 'marginal']
-    list_nsamples = [4000]
+    list_nsamples = [2000]
     list_ndistributions = [4000]
 
     #generate_data_Spirtes.generate_data_multiple_distributions_complex_graph(500, 1000, random, True, model=graph_examples.exampleSpirtes_minimal())
@@ -104,9 +106,12 @@ def spirtes_nonlin():
         generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         # generate 10 files with test distributions.
         generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, model)
-        train_val = pd.read_csv('generated_data.nosync\multiple_distributions_Spirtes_gen_values.csv')
-        train_target = pd.read_csv('generated_data.nosync\multiple_distributions_Spirtes_gen_targets.csv')
-        test_target = pd.read_csv('simulated_data\spirtes_tetrad_constraints_targets.csv')
+        train_val = pd.read_csv(
+            train_path / 'multiple_distributions_Spirtes_gen_values.csv')
+        train_target = pd.read_csv(
+            train_path / 'multiple_distributions_Spirtes_gen_targets.csv')
+        test_target = pd.read_csv(test_path /
+                                  'spirtes_tetrad_constraints_targets.csv')
         for product in list(itertools.product(list_KME, list_E, list_K)):
             KME, E, K = product
             w = rcc.create_weights(K)
@@ -118,8 +123,7 @@ def spirtes_nonlin():
             print("RFC fitted")
 
             for n in range(10):
-                #TODO this path needs to be adjusted.
-                test_val = pd.read_csv('simulated_data\spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b,d,nsamp,n))
+                test_val = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b,d,nsamp,n))
 
                 x2, y2 = rcc.kernel_mean_embedding(test_val, test_target, w, False, KME)
                 prediction = reg.predict(x2)
@@ -138,38 +142,42 @@ def spirtes_nonlin():
 
 def spirtes_wishart():
     model = graph_examples.exampleSpirtes_simpel()
-    linear = [False]
-    b = [0.01,0.05]
-    d = [0.01,0.05]
-    n_samples = [200,500,1000,2000,10000]
-    test_target_path = 'simulated_data\spirtes_tetrad_constraints_targets.csv'
+    list_b = [0.01,0.05]
+    list_d = [0.01,0.05]
+    list_n_samples = [200,500,1000,2000,10000]
+    test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
     filename = 'wishart_experiment_samplesize'
-    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','linear','best_accuracy','mean_accuracy','std_accuracy'],filename)
+    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','best_accuracy','mean_accuracy','std_accuracy'],filename)
     acc_list = []
     best_acc = 0
-    for product in itertools.product(n_samples, b, d):
-        #generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, model)
-        samples, b, d = product
-        for n in range(5):
-            values = pd.read_csv('simulated_data\spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, samples, n))
+    for product in itertools.product(list_n_samples, list_b, list_d):
+        n_samples, b, d = product
+        generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, model)
+        for n in range(10):
+            values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
             acc = test_data_single(values, targets)
             acc_list.append(acc)
             if acc > best_acc: best_acc = acc
-        csv.exp_write_csv([linear, b,d, samples, False, best_acc, statistics.mean(acc_list), statistics.pstdev(acc_list)],filename)
+        csv.exp_write_csv([False, b,d, n_samples, best_acc, statistics.mean(acc_list), statistics.pstdev(
+            acc_list)],filename)
 
-    # This should test the Wishart test in the linear case.
-    # acc_list = []
-    # best_acc = 0
-    # for product in itertools.product(n_samples, b, d):
-    #     samples, b, d = product
-    #     for i in range(10):
-    #         values = pd.read_csv('simulated_data\spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, samples, n))
-    #         acc = test_data_single(values, targets)
-    #         acc_list.append(acc)
-    #         if acc > best_acc: best_acc = acc
-    #     csv.exp_write_csv([b,d, n_samples, False, best_acc, statistics.mean(acc_list), statistics.pstdev(acc_list)],
-    #                       filename)
+    #This should test the Wishart test in the linear case.
+    acc_list = []
+    best_acc = 0
+    list_b = [0,0.1,0.05]
+    list_d = [0]
+    for product in itertools.product(list_n_samples, list_b, list_d):
+        n_samples, b, d = product
+        generate_data_Spirtes.generate_data_linear(n_samples, b, d, model)
+        for n in range(10):
+            values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+
+            acc = test_data_single(values, targets)
+            acc_list.append(acc)
+            if acc > best_acc: best_acc = acc
+        csv.exp_write_csv([True, b,d, n_samples, best_acc, statistics.mean(acc_list), statistics.pstdev(
+            acc_list)],filename)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import csv
 import os
+import pathlib
 
 def make_csv_predefmodel(n_samples, csv_name=''):
     dir_str = os.getcwd().replace('\\', '/') + '/generated_data.nosync/'
@@ -27,7 +28,7 @@ def write_csv(values, target, csv_name=''):
         target_writer.writerow(target)
 
 def exp_make_csv_predefmodel(header, csv_name=''):
-    dir_str = os.getcwd().replace('\\', '/') + '/experiment_results/'
+    dir_str = os.getcwd().replace('\\', '/') + '/experiment_results_local/'
     with open(dir_str + csv_name + '_results.csv', 'w+',
               newline='') as result_file:
         value_writer = csv.writer(result_file, delimiter=',')
@@ -39,7 +40,7 @@ def exp_write_csv(values, csv_name=''):
     #           newline='') as value_file, open('generated_data.nosync/' + csv_name +
     #     'gen_targets.csv', 'w', newline='') as target_file, open('generated_data.nosync/' + csv_name +
     #     'gen_tetrads.csv', 'w', newline='') as tetrad_file:        \
-    dir_str = os.getcwd().replace('\\', '/') + '/experiment_results/'
+    dir_str = os.getcwd().replace('\\', '/') + '/experiment_results_local/'
     with open(dir_str + csv_name + '_results.csv', 'a',
               newline='') as result_file:
         value_writer = csv.writer(result_file, delimiter=',')
