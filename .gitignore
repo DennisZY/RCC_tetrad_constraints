@@ -22,3 +22,5 @@ simulation_environment/dag_creator/causal-cmd.log
 simulation_environment/dag_creator/fges-continuous.svg
 
 simulation_environment/dag_creator/py-causal-fges-continuous-example.py
+
+simulation_environment/data/
