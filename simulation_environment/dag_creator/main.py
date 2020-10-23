@@ -87,18 +87,19 @@ def spirtes_nonlin():
     transform_input_data.spirtes_data(*model)
 
     linear_train = [False]
-    list_b = [0.05]
-    list_d = [0.05]
-    path = 'experiment_larget_sample_trees_weights'
-    list_E = [500]
-    list_K = [400]
+    list_b = [0.01,0.05]
+    list_d = [0.01,0.05]
+    path = 'experiment_general'
+    list_E = [200,500,1000]
+    list_K = [200,500,1000]
     list_KME = ['4'] #['minimal', '4', 'marginal']
-    list_nsamples = [2000]
-    list_ndistributions = [4000]
+    list_nsamples = [200,1000,2000]
+    list_ndistributions = [200,1000,4000]
 
     #generate_data_Spirtes.generate_data_multiple_distributions_complex_graph(500, 1000, random, True, model=graph_examples.exampleSpirtes_minimal())
 
     t0 = time.time()
+    count = 0
 
     csv.exp_make_csv_predefmodel(['train_lin','b','d','KME','E', 'K','n_samples','n_distributions','score','trueneg','falseneg','truepos','falsepos'], path)
     for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d):
@@ -113,6 +114,8 @@ def spirtes_nonlin():
         test_target = pd.read_csv(test_path /
                                   'spirtes_tetrad_constraints_targets.csv')
         for product in list(itertools.product(list_KME, list_E, list_K)):
+            count += 1
+            print('Count: {}'.format(count))
             KME, E, K = product
             w = rcc.create_weights(K)
 
