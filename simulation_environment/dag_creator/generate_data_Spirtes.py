@@ -13,10 +13,10 @@ train_path = Path("generate_data.nosync/")
 test_path = Path('simulated_data/')
 
 def noise(n):
+    #p = np.random.uniform(0.5,1)
     return(np.random.normal(0,1,n))
 
 def s_model_mechanism(x, b):
-    b = 0
     a = np.random.uniform(0.25,1)
     c = np.random.uniform(0.5,2)
     result = a * x + b * c * np.power(x,3)
@@ -29,6 +29,7 @@ def m_model_mechanism(x):
 def m_model_nonlinear_mechanism(x, d):
     e = np.random.uniform(0.5, 2)
     f = np.random.uniform(0.5, 2)
+    #p = np.random.randint(1, 4)
     return((1-d) * e * x + d * f * np.power(x,3))
 
 # Given a list of variables, calculates their values and the values of all
@@ -77,7 +78,7 @@ def generate_data(m_model, s_model, n_samples, b, d, linear = True):
     s_parents_dict = utility_functions.find_parents(s_model)
     m_parents_dict = utility_functions.find_parents(m_model)
 
-    # The dictionary that will containt the value of all variables at the end.
+    # The dictionary that will contain the value of all variables at the end.
     s_model_values = {}
     measure_vars = set([x for value in m_model.values() for x in value])
     measure_values = np.zeros([n_samples,len(measure_vars)])
@@ -102,21 +103,30 @@ def generate_data(m_model, s_model, n_samples, b, d, linear = True):
 # generate data as a normal table.
 def generate_data_linear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
     m_model, s_model = model
-    for n in range(10):
+    for n in range(100):
         data = generate_data(m_model, s_model, n_samples, b, d, True)
         data.to_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n),
                     index=False)
 
 def generate_data_nonlinear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
     m_model, s_model = model
-    for n in range(10):
+    n = 0
+    while n < 100:
         data = generate_data(m_model, s_model, n_samples, b, d, False)
-        data.to_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples,
-                                                                                         n), index=False)
+        corr = data.corr()
+        no_obvious_examples = True
+        for var in corr.columns:
+            if not ((corr[var].drop(var) >= 0.09).all() and (corr[var].drop(var) <= 0.90).all()):
+                no_obvious_examples = False
+        if no_obvious_examples:
+            data.to_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples,
+                                                                                             n), index=False)
+            n += 1
 
-def generate_data_both():
-    generate_data_nonlinear(graph_examples.exampleSpirtes())
-    generate_data_basic(graph_examples.exampleSpirtes())
+
+def generate_data_both(n_samples, b, d):
+    generate_data_nonlinear(n_samples, b, d, graph_examples.exampleSpirtes())
+    generate_data_linear(n_samples, b, d, graph_examples.exampleSpirtes())
 
 # Generate a csv of which each row represents an x amount of observations of four variables
 def generate_data_multiple_distributions(n_samples, n_sets, b, d, linearity):
