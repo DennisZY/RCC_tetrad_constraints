@@ -1,3 +1,6 @@
+thesis-env
+simulation_environment/data
+simulation_environment/dag_creator/generated_data.nosync
 
 .idea/
 
