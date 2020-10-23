@@ -101,17 +101,25 @@ def generate_data(m_model, s_model, n_samples, b, d, linear = True):
     return(pd.DataFrame(measure_values, columns=measure_vars))
 
 # generate data as a normal table.
-def generate_data_linear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
-    m_model, s_model = model
-    for n in range(100):
-        data = generate_data(m_model, s_model, n_samples, b, d, True)
-        data.to_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n),
-                    index=False)
-
-def generate_data_nonlinear(n_samples, b, d, model = graph_examples.exampleSpirtes()):
+def generate_data_linear(n_samples, b, d, test_size, model = graph_examples.exampleSpirtes()):
     m_model, s_model = model
     n = 0
-    while n < 100:
+    while n < test_size:
+        data = generate_data(m_model, s_model, n_samples, b, d, True)
+        corr = data.corr()
+        no_obvious_examples = True
+        for var in corr.columns:
+            if not ((corr[var].drop(var) >= 0.09).all() and (corr[var].drop(var) <= 0.90).all()):
+                no_obvious_examples = False
+        if no_obvious_examples:
+            data.to_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n),
+                    index=False)
+            n += 1
+
+def generate_data_nonlinear(n_samples, b, d, test_size, model = graph_examples.exampleSpirtes()):
+    m_model, s_model = model
+    n = 0
+    while n < test_size:
         data = generate_data(m_model, s_model, n_samples, b, d, False)
         corr = data.corr()
         no_obvious_examples = True

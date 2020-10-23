@@ -17,7 +17,7 @@ train_path = Path("generated_data.nosync/")
 test_path = Path('simulated_data/')
 
 def main():
-    spirtes_wishart_poldem()
+    spirtes_wishart()
 
 def poldem():
     # gd.generate_extra_training_data('spirtes', 100, 2400, 2, 3, 2.5, 0.5, 5)
@@ -144,18 +144,19 @@ def spirtes_nonlin():
             print()
 
 def spirtes_wishart():
-    model = graph_examples.exampleSpirtes_simpel()
+    model = graph_examples.exampleSpirtes()
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
     list_n_samples = [200,500,1000,2000,10000]
+    test_size = 50
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
-    filename = 'wishart_experiment_samplesize_vanilla'
+    filename = 'wishart_experiment_adjusted_wish'
     csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
     for product in itertools.product(list_n_samples, list_b, list_d):
         n_samples, b, d = product
-        #generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, model)
-        for n in range(100):
+        generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
+        for n in range(test_size):
             values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
             acc, tetrad_list, label_list = test_data_single(values, targets)
@@ -172,8 +173,8 @@ def spirtes_wishart():
     list_d = [0]
     for product in itertools.product(list_n_samples, list_b, list_d):
         n_samples, b, d = product
-        generate_data_Spirtes.generate_data_linear(n_samples, b, d, model)
-        for n in range(100):
+        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+        for n in range(test_size):
             values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
             acc, tetrad_list, label_list = test_data_single(values, targets)
