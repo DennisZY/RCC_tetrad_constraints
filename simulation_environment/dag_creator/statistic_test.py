@@ -3,27 +3,29 @@ import pandas as pd
 import utility_functions as uf
 from scipy.stats import norm
 
-def wishnart_test(var0, var1, var2, var3, cov, n):
+def wishart_test(var0, var1, var2, var3, cov, n):
     det1 = cov.loc[var0,var0] * cov.loc[var3,var3] - cov.loc[var0,var3] * cov.loc[var0,var3]
     det2 = cov.loc[var1,var1] * cov.loc[var2,var2] - cov.loc[var1,var2] * cov.loc[var1,var2]
     product1 = (n + 1) / ((n - 1) * (n - 2)) * det1 * det2
-    product2 = product1 - (np.linalg.det(cov.loc[[var0,var1,var2,var3],[var0,var1,var2,var3]]) /(n - 2))
+    #product2 = product1 - ((np.linalg.det(cov.loc[[var0,var1,var2,var3],[var0,var1,var2,var3]]) /(n - 2)))
+    t = ((3 / (n - 2)) * np.power(np.linalg.det(cov.loc[[var0,var1],[var2,var3]]),2))
+    product2 = product1 - (np.linalg.det(cov.loc[[var0,var1,var2,var3],[var0,var1,var2,var3]]) /(n - 2)) + t
     return(np.sqrt(abs(product2)))
 
 def tetrad_test(i, j , k, l, cov, alpha, n):
     test_values = []
     # Might want to add n - 1 / n - 2 before tetrad_ijkl, this is also done in Drton et al (2007)
     tetrad_ijkl = cov.loc[i,j] * cov.loc[k,l] - cov.loc[i,k] * cov.loc[j,l]
-    SD = wishnart_test(i,j,k,l,cov,n)
+    SD = wishart_test(i, j, k, l, cov, n)
     # Probability that a tetrad constraint could attain this value when drawn from a normal distribution.
     test_values.append(2 * (1 - norm.cdf(abs(tetrad_ijkl / SD))))
 
     tetrad_ijlk = cov.loc[i,j] * cov.loc[k,l] - cov.loc[i,l] * cov.loc[j,k]
-    SD = wishnart_test(i, j, l, k, cov, n)
+    SD = wishart_test(i, j, l, k, cov, n)
     test_values.append(2 * (1 - norm.cdf(abs(tetrad_ijlk / SD))))
 
     tetrad_iklj = cov.loc[i,k] * cov.loc[j,l] - cov.loc[i,l] * cov.loc[j,k]
-    SD = wishnart_test(i, k, l, j, cov, n)
+    SD = wishart_test(i, k, l, j, cov, n)
     test_values.append(2 * (1 - norm.cdf(abs(tetrad_iklj / SD))))
     # If this returns false, then the probability of seeing the value of x (the p value) is smaller than alpha, which
     # implies that it is not a tetrad constraint.
@@ -63,7 +65,7 @@ def tetrad_test_single(i, j , k, l, cov, alpha, n):
     # Might want to add n - 1 / n - 2 before tetrad_ijkl, this is also done in Drton et al (2007)
     tetrad_ijkl = cov.loc[i,k] * cov.loc[j,l] - cov.loc[i,l] * cov.loc[j,k]
     #tetrad_ijkl = (n - 1 / n - 2) * tetrad_ijkl
-    SD = wishnart_test(i,j,k,l,cov,n)
+    SD = wishart_test(i, j, k, l, cov, n)
     # Probability that a tetrad constraint could attain this value when drawn from a normal distribution.
     test_value = 2 * (1 - norm.cdf(abs(tetrad_ijkl / SD)))
 
