@@ -17,7 +17,7 @@ train_path = Path("generated_data.nosync/")
 test_path = Path('simulated_data/')
 
 def main():
-    spirtes_wishart()
+    spirtes_nonlin()
 
 def poldem():
     # gd.generate_extra_training_data('spirtes', 100, 2400, 2, 3, 2.5, 0.5, 5)
@@ -83,7 +83,7 @@ def spirtes_nonlin():
     # Length of KME vector
     # Amount of trees in RFC
     # Amount of non-linearity.
-    model = graph_examples.exampleSpirtes_simpel()
+    model = graph_examples.exampleSpirtes()
     transform_input_data.spirtes_data(*model)
 
     linear_train = [False]
@@ -93,8 +93,9 @@ def spirtes_nonlin():
     list_E = [200,500,1000]
     list_K = [200,500,1000]
     list_KME = ['4'] #['minimal', '4', 'marginal']
-    list_nsamples = [200,1000,2000]
-    list_ndistributions = [200,1000,4000]
+    list_nsamples = [100,200,500]
+    test_size = 10
+    list_ndistributions = [100]#[200,1000,4000]
 
     #generate_data_Spirtes.generate_data_multiple_distributions_complex_graph(500, 1000, random, True, model=graph_examples.exampleSpirtes_minimal())
 
@@ -106,42 +107,51 @@ def spirtes_nonlin():
         nsamp, ndist, b, d = prod
         generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         # generate 10 files with test distributions.
-        generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, model)
+        generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
         train_val = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_values.csv')
         train_target = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_targets.csv')
         test_target = pd.read_csv(test_path /
                                   'spirtes_tetrad_constraints_targets.csv')
-        for product in list(itertools.product(list_KME, list_E, list_K)):
+        for product in list(itertools.product(list_KME, list_K)):
             count += 1
             print('Count: {}'.format(count))
-            KME, E, K = product
+            KME, K = product
             w = rcc.create_weights(K)
 
             print('{} & {}'.format(product, prod))
 
             x1, y1 = rcc.kernel_mean_embedding(train_val, train_target, w, True, KME)
-            reg = RFC(n_estimators=E, random_state=0, n_jobs=16).fit(x1, y1)
-            print("RFC fitted")
 
-            for n in range(10):
+            result_list = []
+            for n in range(5):
                 test_val = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b,d,nsamp,n))
 
-                x2, y2 = rcc.kernel_mean_embedding(test_val, test_target, w, False, KME)
-                prediction = reg.predict(x2)
-                cm = confusion_matrix(y2, prediction)
-                trueneg = cm[0,0]
-                falseneg = cm[1,0]
-                truepos = cm[1,1]
-                falsepos = cm[0,1]
-                score = reg.score(x2, y2)
-                print('Score: {}'.format(score))
-                csv.exp_write_csv([linear_train,b,d,KME, E, K, nsamp, ndist, score,trueneg,falseneg,truepos,falsepos],
-                          path)
-            print("Finished at time:")
-            print(time.time() - t0)
-            print()
+                result = rcc.kernel_mean_embedding(test_val, test_target, w, False, KME)
+                result_list.append(result)
+
+
+            for E in list_E:
+
+                reg = RFC(n_estimators=E, random_state=0, n_jobs=16).fit(x1, y1)
+                print("RFC fitted")
+
+                for x2, y2 in result_list:
+
+                    prediction = reg.predict(x2)
+                    cm = confusion_matrix(y2, prediction)
+                    trueneg = cm[0,0]
+                    falseneg = cm[1,0]
+                    truepos = cm[1,1]
+                    falsepos = cm[0,1]
+                    score = reg.score(x2, y2)
+                    print('Score: {}'.format(score))
+                    csv.exp_write_csv([linear_train,b,d,KME, E, K, nsamp, ndist, score,trueneg,falseneg,truepos,falsepos],
+                              path)
+                print("Finished at time:")
+                print(time.time() - t0)
+                print()
 
 def spirtes_wishart():
     model = graph_examples.exampleSpirtes()
@@ -151,7 +161,7 @@ def spirtes_wishart():
     test_size = 50
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
-    filename = 'wishart_experiment_adjusted_wish'
+    filename = 'wishart_experiment_adjusted_wish_minimal'
     csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
     for product in itertools.product(list_n_samples, list_b, list_d):
         n_samples, b, d = product

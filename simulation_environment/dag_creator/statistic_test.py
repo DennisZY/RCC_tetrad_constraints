@@ -64,7 +64,7 @@ def test_data(data_path, target_path, b, n_samples):
 def tetrad_test_single(i, j , k, l, cov, alpha, n):
     # Might want to add n - 1 / n - 2 before tetrad_ijkl, this is also done in Drton et al (2007)
     tetrad_ijkl = cov.loc[i,k] * cov.loc[j,l] - cov.loc[i,l] * cov.loc[j,k]
-    #tetrad_ijkl = (n - 1 / n - 2) * tetrad_ijkl
+    tetrad_ijkl = ((n - 1) / (n - 2)) *  tetrad_ijkl
     SD = wishart_test(i, j, k, l, cov, n)
     # Probability that a tetrad constraint could attain this value when drawn from a normal distribution.
     test_value = 2 * (1 - norm.cdf(abs(tetrad_ijkl / SD)))
