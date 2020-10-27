@@ -87,8 +87,8 @@ def spirtes_nonlin():
     transform_input_data.spirtes_data(*model)
 
     linear_train = [False]
-    list_b = [0.01,0.05]
-    list_d = [0.01,0.05]
+    list_b = [0.05]
+    list_d = [0.05]
     path = 'experiment_general'
     list_E = [200,500,1000]
     list_K = [200,500,1000]
