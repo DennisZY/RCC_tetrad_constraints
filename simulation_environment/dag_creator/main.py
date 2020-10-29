@@ -87,15 +87,15 @@ def spirtes_nonlin():
     transform_input_data.spirtes_data(*model)
 
     linear_train = [False]
-    list_b = [0.01,0.05]
-    list_d = [0.01,0.05]
-    path = 'experiment_general'
-    list_E = [200,500,1000]
-    list_K = [200,500,1000]
+    list_b = [0.05]
+    list_d = [0.05]
+    path = 'experiment_large_graph_more_distributions'
+    list_E = [1000]
+    list_K = [1000]
     list_KME = ['4'] #['minimal', '4', 'marginal']
-    list_nsamples = [100,200,500]
+    list_nsamples = [200,500,2000]
     test_size = 10
-    list_ndistributions = [100]#[200,1000,4000]
+    list_ndistributions = [200,500,2000]#[200,1000,4000]
 
     #generate_data_Spirtes.generate_data_multiple_distributions_complex_graph(500, 1000, random, True, model=graph_examples.exampleSpirtes_minimal())
 
@@ -155,13 +155,14 @@ def spirtes_nonlin():
 
 def spirtes_wishart():
     model = graph_examples.exampleSpirtes()
-    list_b = [0.01,0.05]
-    list_d = [0.01,0.05]
-    list_n_samples = [200,500,1000,2000,10000]
-    test_size = 50
+
+    list_b = [0.05]
+    list_d = [0.05]
+    list_n_samples = [1000,10000]
+    test_size = 10
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
-    filename = 'wishart_experiment_adjusted_wish_minimal'
+    filename = 'wishart_compare_with_general2'
     csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
     for product in itertools.product(list_n_samples, list_b, list_d):
         n_samples, b, d = product
@@ -179,7 +180,7 @@ def spirtes_wishart():
             csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos], filename)
 
     #This should test the Wishart test in the linear case.
-    list_b = [0,0.1,0.05]
+    list_b = [0,0.01,0.05]
     list_d = [0]
     for product in itertools.product(list_n_samples, list_b, list_d):
         n_samples, b, d = product
