@@ -74,7 +74,7 @@ def spirtes():
 
 
 def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples, test_size,
-                   list_ndistributions,path,models):
+                   list_ndistributions,path, model):
     # Things to vary:
     # embedding
     # Length of KME vector
@@ -87,9 +87,8 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
     count = 0
     csv.exp_make_csv_predefmodel(['train_lin','b','d','KME','E', 'K','n_samples','n_distributions','score','trueneg','falseneg','truepos','falsepos'], path)
 
-    for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d, models):
-        nsamp, ndist, b, d, model = prod
-        transform_input_data.spirtes_data(*model)
+    for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d):
+        nsamp, ndist, b, d = prod
         generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         # generate 10 files with test distributions.
         generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
@@ -146,7 +145,7 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
 
 
 def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, model, filename):
-
+    transform_input_data.spirtes_data(*model)
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
     csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
