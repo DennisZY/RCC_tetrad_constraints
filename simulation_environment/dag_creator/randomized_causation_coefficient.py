@@ -78,7 +78,7 @@ def kernel_mean_embedding(values, targets, weights, train = False, case = 'minim
     elif case == 'normal': kernel_features = 5
     elif case == 'extra': kernel_features = 7
 
-    print('{} rows to embed'.format(targets.shape[0]))
+    #print('{} rows to embed'.format(targets.shape[0]))
 
     w, wz, wp, wp1, wp2 = weights
     L1 = np.zeros((3 * targets.shape[0], 1))
@@ -124,8 +124,8 @@ def kernel_mean_embedding(values, targets, weights, train = False, case = 'minim
 
             L1[ix] = label
 
-        if i % 1000 == 0:
-            print(i)
+        #if i % 1000 == 0:
+            #print(i)
 
     return (Z1,L1.ravel())
 
