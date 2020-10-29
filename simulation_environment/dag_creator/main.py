@@ -3,7 +3,7 @@ import score_functions
 import generate_kme_files
 
 def main():
-    spirtes_nonlin()
+    spirtes_wishart()
 
 def spirtes_nonlin():
     # Things to vary:
@@ -15,7 +15,7 @@ def spirtes_nonlin():
 
     models = graph_examples.example0()
     #TODO: does it hurt to only take one combination of the variables?
-    model = [models[0]]
+    model = models[0]
     #model2 = graph_examples.example1()
 
     linear_train = [False]
@@ -33,13 +33,13 @@ def spirtes_nonlin():
                               test_size, list_ndistributions, path, model)
 
 def spirtes_wishart():
-    model = graph_examples.exampleSpirtes()
+    models = graph_examples.example1()
+    model = models[0]
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
-    list_n_samples = [200,500,1000,2000,10000]
-    test_size = 50
-    filename = 'wishart_experiment_adjusted_wish_minimal'
-
+    list_n_samples = [50,100,500,1000]
+    test_size = 100
+    filename = 'wishart_experiment_3_t_sep_results'
     list_b_lin = [0, 0.1, 0.05]
     list_d_lin = [0]
 
