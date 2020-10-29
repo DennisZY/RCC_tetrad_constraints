@@ -78,11 +78,11 @@ def exampleSpirtes():
     return(m_model, s_model)
 
 def exampleSpirtes_simpel():
-    s_model = {'L1': {'L2','L3','L4'}}
+    s_model = {'L1': {'L2','L3'}}
     m_model = {'L1': {'X1','X2','X3','X4'},
-               'L2': {'X6','X7','X8','X15','X16'},
-               'L4': {'X16','X17','X18','X19','X20'},
-               'X15': {'X19'}}
+               'L2': {'X5','X6','X7','X8','X9'},
+               'L3': {'X9','X10','X11','X12','X13'},
+               'X5': {'X10'}}
     return(m_model, s_model)
 
 def exampleSpirtes_minimal():
