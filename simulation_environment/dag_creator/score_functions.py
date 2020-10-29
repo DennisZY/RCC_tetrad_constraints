@@ -126,10 +126,16 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
 
                     prediction = reg.predict(x2)
                     cm = confusion_matrix(y2, prediction)
-                    trueneg = cm[0,0]
-                    falseneg = cm[1,0]
-                    truepos = cm[1,1]
-                    falsepos = cm[0,1]
+                    if cm.shape[0] == 1:
+                        trueneg = 1
+                        falseneg = 0
+                        truepos = 1
+                        falsepos = 0
+                    else:
+                        trueneg = cm[0,0]
+                        falseneg = cm[1,0]
+                        truepos = cm[1,1]
+                        falsepos = cm[0,1]
                     score = reg.score(x2, y2)
                     #print('Score: {}'.format(score))
                     csv.exp_write_csv([linear_train,b,d,KME, E, K, nsamp, ndist, score,trueneg,falseneg,truepos,falsepos],
