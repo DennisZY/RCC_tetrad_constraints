@@ -34,17 +34,17 @@ def spirtes_nonlin():
 
 def spirtes_wishart():
     models = graph_examples.example1()
-    model = models[0]
+    #model = models[0]
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
     list_n_samples = [50,100,500,1000]
     test_size = 100
-    filename = 'wishart_experiment_3_t_sep_results'
+    filename = 'wishart_experiment_3_t_sep'
     list_b_lin = [0, 0.1, 0.05]
     list_d_lin = [0]
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    models, filename)
 
 
 def score_kme():

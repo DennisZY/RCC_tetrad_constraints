@@ -126,10 +126,11 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                     prediction = reg.predict(x2)
                     cm = confusion_matrix(y2, prediction)
                     if cm.shape[0] == 1:
-                        trueneg = 1
-                        falseneg = 0
-                        truepos = 1
-                        falsepos = 0
+                        if cm.shape[0] == 1:
+                            trueneg = prediction.count(False)
+                            falseneg = 0
+                            truepos = prediction.count(True)
+                            falsepos = 0
                     else:
                         trueneg = cm[0,0]
                         falseneg = cm[1,0]
@@ -144,42 +145,60 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                 print()
 
 
-def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, model, filename):
-    transform_input_data.spirtes_data(*model)
+def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, models, filename):
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     targets = pd.read_csv(test_target_path)
-    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos','falsepos'],filename)
+    model_count = 0
 
-    for product in itertools.product(list_n_samples, list_b, list_d):
-        n_samples, b, d = product
-        generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
-        for n in range(test_size):
-            values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos',
+                                  'falsepos','model_count'],filename)
+    for model in models:
+        for product in itertools.product(list_n_samples, list_b, list_d):
+            n_samples, b, d = product
+            transform_input_data.spirtes_data(*model)
+            generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
+            for n in range(test_size):
+                values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
-            acc, tetrad_list, label_list = test_data_single(values, targets)
-            cm = confusion_matrix(label_list, tetrad_list)
-            trueneg = cm[0, 0]
-            falseneg = cm[1, 0]
-            truepos = cm[1, 1]
-            falsepos = cm[0, 1]
+                acc, tetrad_list, label_list = test_data_single(values, targets)
+                cm = confusion_matrix(label_list, tetrad_list)
+                if cm.shape[0] == 1:
+                    trueneg = tetrad_list.count(False)
+                    falseneg = 0
+                    truepos = tetrad_list.count(True)
+                    falsepos = 0
+                else:
+                    trueneg = cm[0, 0]
+                    falseneg = cm[1, 0]
+                    truepos = cm[1, 1]
+                    falsepos = cm[0, 1]
 
-            csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos], filename)
+                csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos,
+                                   model_count],
+                                  filename)
+        model_count += 1
 
     #This should test the Wishart test in the linear case.
-    for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
-        n_samples, b, d = product
-        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
-        for n in range(test_size):
-            values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
-
-            acc, tetrad_list, label_list = test_data_single(values, targets)
-            cm = confusion_matrix(label_list, tetrad_list)
-            trueneg = cm[0, 0]
-            falseneg = cm[1, 0]
-            truepos = cm[1, 1]
-            falsepos = cm[0, 1]
-
-            csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
+    # for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
+    #     n_samples, b, d = product
+    #     generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+    #     for n in range(test_size):
+    #         values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+    #
+    #         acc, tetrad_list, label_list = test_data_single(values, targets)
+    #         cm = confusion_matrix(label_list, tetrad_list)
+    #         if cm.shape[0] == 1:
+    #             trueneg = tetrad_list.count(False)
+    #             falseneg = 0
+    #             truepos = tetrad_list.count(True)
+    #             falsepos = 0
+    #         else:
+    #             trueneg = cm[0, 0]
+    #             falseneg = cm[1, 0]
+    #             truepos = cm[1, 1]
+    #             falsepos = cm[0, 1]
+    #
+    #         csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
 
 
 def spirtes_wishart_poldem():

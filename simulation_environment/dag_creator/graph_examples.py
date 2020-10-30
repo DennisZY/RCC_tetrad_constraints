@@ -66,6 +66,51 @@ def example1():
         models_list.append((m_model,s_model))
     return(models_list)
 
+def example_intra_construct_impure():
+    # 1 latent with 4 children
+    mv = ['y1','y2','y3','y4']
+    models_list = []
+    perms = list(itertools.permutations(mv,4))
+    for perm in perms:
+        y1 = perm[0]
+        y2 = perm[1]
+        y3 = perm[2]
+        y4 = perm[3]
+        m_model = {'eta1': {y1, y2, y3, y4},y1:{y2}}
+        s_model = {'x1': {'eta1'}}
+        models_list.append((m_model,s_model))
+    return(models_list)
+
+def example_cross_construct_impure():
+    # Examples with 2 latents and 2 children each
+    mv = ['y1','y2','y3','y4']
+    models_list = []
+    for perm in itertools.permutations(mv,4):
+        y1 = perm[0]
+        y2 = perm[1]
+        y3 = perm[2]
+        y4 = perm[3]
+        m_model = {'eta1': {y1, y2}, 'eta2': {y3, y4}, y1: {y3}}
+        s_model = {'x1': {'eta2'}, 'eta1': {'eta2'}}
+        #s_model = {'eta1': {'eta2'}}
+        models_list.append((m_model,s_model))
+    return(models_list)
+
+def example_latent_measure_impure():
+    mv = ['y1','y2','y3','y4','y5']
+    models_list = []
+    for perm in itertools.permutations(mv,5):
+        y1 = perm[0]
+        y2 = perm[1]
+        y3 = perm[2]
+        y4 = perm[3]
+        y5 = perm[4]
+        m_model = {'eta1': {y1, y2, y5}, 'eta2': {y3, y4, y5}}
+        s_model = {'eta1': {'eta2'}}
+        #s_model = {'eta1': {'eta2'}}
+        models_list.append((m_model,s_model))
+    return(models_list)
+
 def exampleSpirtes():
     s_model = {'L1': {'L2','L3','L4','L5'}}
     m_model = {'L1': {'X1','X2','X3','X4','X5'},
