@@ -3,7 +3,7 @@ import generate_data_Spirtes
 import time
 import itertools
 import csv_functions as csv
-import graph_examples
+import numpy as np
 from statistic_test import test_data, test_data_single
 import pandas as pd
 import transform_input_data
@@ -124,18 +124,19 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                 for x2, y2 in result_list:
 
                     prediction = reg.predict(x2)
-                    cm = confusion_matrix(y2, prediction)
-                    if cm.shape[0] == 1:
-                        if cm.shape[0] == 1:
-                            trueneg = prediction.count(False)
-                            falseneg = 0
-                            truepos = prediction.count(True)
-                            falsepos = 0
-                    else:
-                        trueneg = cm[0,0]
-                        falseneg = cm[1,0]
-                        truepos = cm[1,1]
-                        falsepos = cm[0,1]
+                    trueneg = 0
+                    falseneg = 0
+                    truepos = 0
+                    falsepos = 0
+                    for i in range(len(prediction)):
+                        if (prediction[i] == True) and (y2[i] == True):
+                            truepos += 1
+                        if (prediction[i] == False) and (y2[i] == True):
+                            falseneg += 1
+                        if (prediction[i] == True) and (y2[i] == False):
+                            falsepos += 1
+                        if (prediction[i] == False) and (y2[i] == False):
+                            trueneg += 1
                     score = reg.score(x2, y2)
                     #print('Score: {}'.format(score))
                     csv.exp_write_csv([linear_train,b,d,KME, E, K, nsamp, ndist, score,trueneg,falseneg,truepos,falsepos],
@@ -161,17 +162,19 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
                 values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
                 acc, tetrad_list, label_list = test_data_single(values, targets)
-                cm = confusion_matrix(label_list, tetrad_list)
-                if cm.shape[0] == 1:
-                    trueneg = tetrad_list.count(False)
-                    falseneg = 0
-                    truepos = tetrad_list.count(True)
-                    falsepos = 0
-                else:
-                    trueneg = cm[0, 0]
-                    falseneg = cm[1, 0]
-                    truepos = cm[1, 1]
-                    falsepos = cm[0, 1]
+                trueneg = 0
+                falseneg = 0
+                truepos = 0
+                falsepos = 0
+                for i in range(len(label_list)):
+                    if (label_list[i] == True) and (tetrad_list[i] == True):
+                        truepos += 1
+                    if (label_list[i] == False) and (tetrad_list[i] == True):
+                        falseneg += 1
+                    if (label_list[i] == True) and (tetrad_list[i] == False):
+                        falsepos += 1
+                    if (label_list[i] == False) and (tetrad_list[i] == False):
+                        trueneg += 1
 
                 csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos,
                                    model_count],
@@ -186,17 +189,19 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
     #         values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
     #
     #         acc, tetrad_list, label_list = test_data_single(values, targets)
-    #         cm = confusion_matrix(label_list, tetrad_list)
-    #         if cm.shape[0] == 1:
-    #             trueneg = tetrad_list.count(False)
-    #             falseneg = 0
-    #             truepos = tetrad_list.count(True)
-    #             falsepos = 0
-    #         else:
-    #             trueneg = cm[0, 0]
-    #             falseneg = cm[1, 0]
-    #             truepos = cm[1, 1]
-    #             falsepos = cm[0, 1]
+    #         trueneg = 0
+    #         falseneg = 0
+    #         truepos = 0
+    #         falsepos = 0
+    #         for i in range(len(label_list)):
+    #             if (label_list[i] == True) and (tetrad_list[i] == True):
+    #                 truepos += 1
+    #             if (label_list[i] == False) and (tetrad_list[i] == True):
+    #                 falseneg += 1
+    #             if (label_list[i] == True) and (tetrad_list[i] == False):
+    #                 falsepos += 1
+    #             if (label_list[i] == False) and (tetrad_list[i] == False):
+    #                 trueneg += 1
     #
     #         csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
 

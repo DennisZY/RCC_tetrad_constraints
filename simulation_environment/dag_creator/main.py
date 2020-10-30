@@ -3,7 +3,7 @@ import score_functions
 import generate_kme_files
 
 def main():
-    spirtes_wishart()
+    spirtes_nonlin()
 
 def spirtes_nonlin():
     # Things to vary:
@@ -13,7 +13,7 @@ def spirtes_nonlin():
     # Amount of non-linearity.
     model = graph_examples.exampleSpirtes()
 
-    models = graph_examples.example1()
+    models = graph_examples.example_cross_construct_impure()
     #TODO: does it hurt to only take one combination of the variables?
     model = models[0]
     #model2 = graph_examples.example1()
@@ -21,7 +21,7 @@ def spirtes_nonlin():
     linear_train = [False]
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
-    path = 'experiment_nonlin_3_t_sep'
+    path = 'experiment_cross_construct_impure_sep'
     list_E = [100,500,1000]
     list_K = [100,500,1000]
     list_KME = ['4'] #['minimal', '4', 'marginal']
