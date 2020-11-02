@@ -30,6 +30,7 @@ simulation_environment/data/
 
 simulation_environment/dag_creator/experiment_results_local/
 
+simulation_environment/dag_creator/main.py
 
 
 
