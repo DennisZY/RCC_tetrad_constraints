@@ -61,7 +61,7 @@ def political_democracy():
         append_to_csv(dir_str, name, poldem, variable, t_separations)
 
 def spirtes_data(m_model, s_model):
-    variables = set.union(*m_model.values()) - m_model.keys()
+    variables = set.union(*m_model.values())
     var_comb = list(itertools.combinations(variables, 4))
     name = 'spirtes_tetrad_constraints'
     # Length of first list of variables dictates the amount in the CSV file.

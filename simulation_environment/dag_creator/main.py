@@ -11,17 +11,15 @@ def spirtes_nonlin():
     # Length of KME vector
     # Amount of trees in RFC
     # Amount of non-linearity.
-    model = graph_examples.exampleSpirtes()
 
-    models = graph_examples.example_cross_construct_impure()
-    #TODO: does it hurt to only take one combination of the variables?
+    models = graph_examples.example0()
     model = models[0]
     #model2 = graph_examples.example1()
 
     linear_train = [False]
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
-    path = 'experiment_cross_construct_impure_sep'
+    filename = 'experiment_1_t_sep'
     list_E = [100,500,1000]
     list_K = [100,500,1000]
     list_KME = ['4'] #['minimal', '4', 'marginal']
@@ -29,22 +27,26 @@ def spirtes_nonlin():
     test_size = 100
     list_ndistributions = [100,500,1000]#[200,1000,4000]
 
+    print('building file: {}'.format(filename))
+
+
     score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
-                              test_size, list_ndistributions, path, model)
+                              test_size, list_ndistributions, filename, model)
 
 def spirtes_wishart():
-    models = graph_examples.example1()
-    #model = models[0]
+    models = graph_examples.example_latent_measure_impure()
+    model = [models[0]]
     list_b = [0.01,0.05]
     list_d = [0.01,0.05]
     list_n_samples = [50,100,500,1000]
     test_size = 100
-    filename = 'wishart_experiment_3_t_sep'
+    filename = 'wishart_experiment_latent_measure_impure'
+    print('building file: {}'.format(filename))
     list_b_lin = [0, 0.1, 0.05]
     list_d_lin = [0]
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    models, filename)
+                                    model, filename)
 
 
 def score_kme():

@@ -86,6 +86,7 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
     t0 = time.time()
     count = 0
     csv.exp_make_csv_predefmodel(['train_lin','b','d','KME','E', 'K','n_samples','n_distributions','score','trueneg','falseneg','truepos','falsepos'], path)
+    transform_input_data.spirtes_data(*model)
 
     for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d):
         nsamp, ndist, b, d = prod
@@ -148,32 +149,32 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
 
 def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, models, filename):
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
-    targets = pd.read_csv(test_target_path)
     model_count = 0
 
     csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos',
                                   'falsepos','model_count'],filename)
     for model in models:
+        transform_input_data.spirtes_data(*model)
+        targets = pd.read_csv(test_target_path)
         for product in itertools.product(list_n_samples, list_b, list_d):
             n_samples, b, d = product
-            transform_input_data.spirtes_data(*model)
             generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
             for n in range(test_size):
                 values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
-                acc, tetrad_list, label_list = test_data_single(values, targets)
+                acc, predictions, labels = test_data_single(values, targets)
                 trueneg = 0
                 falseneg = 0
                 truepos = 0
                 falsepos = 0
-                for i in range(len(label_list)):
-                    if (label_list[i] == True) and (tetrad_list[i] == True):
+                for i in range(len(labels)):
+                    if (labels[i] == True) and (predictions[i] == True):
                         truepos += 1
-                    if (label_list[i] == False) and (tetrad_list[i] == True):
-                        falseneg += 1
-                    if (label_list[i] == True) and (tetrad_list[i] == False):
+                    if (labels[i] == False) and (predictions[i] == True):
                         falsepos += 1
-                    if (label_list[i] == False) and (tetrad_list[i] == False):
+                    if (labels[i] == True) and (predictions[i] == False):
+                        falseneg += 1
+                    if (labels[i] == False) and (predictions[i] == False):
                         trueneg += 1
 
                 csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos,
