@@ -74,7 +74,7 @@ def spirtes():
 
 
 def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples, test_size,
-                   list_ndistributions,path, model):
+                   list_ndistributions,path, model, impure_train=False):
     # Things to vary:
     # embedding
     # Length of KME vector
@@ -90,7 +90,10 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
 
     for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d):
         nsamp, ndist, b, d = prod
-        generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
+        if impure_train:
+            generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train, False)
+        else:
+            generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         # generate 10 files with test distributions.
         generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
         train_val = pd.read_csv(
@@ -101,11 +104,11 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                                   'spirtes_tetrad_constraints_targets.csv')
         for product in list(itertools.product(list_KME, list_K)):
             count += 1
-            print('Count: {}'.format(count))
+            #print('Count: {}'.format(count))
             KME, K = product
             w = rcc.create_weights(K)
 
-            print('{} & {}'.format(product, prod))
+            #print('{} & {}'.format(product, prod))
 
             x1, y1 = rcc.kernel_mean_embedding(train_val, train_target, w, True, KME)
 
@@ -120,7 +123,7 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
             for E in list_E:
 
                 reg = RFC(n_estimators=E, random_state=0, n_jobs=16).fit(x1, y1)
-                print("RFC fitted")
+                #print("RFC fitted")
 
                 for x2, y2 in result_list:
 
@@ -142,9 +145,9 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                     #print('Score: {}'.format(score))
                     csv.exp_write_csv([linear_train,b,d,KME, E, K, nsamp, ndist, score,trueneg,falseneg,truepos,falsepos],
                               path)
-                print("Finished at time:")
-                print(time.time() - t0)
-                print()
+                #print("Finished at time:")
+                #print(time.time() - t0)
+                #print()
 
 
 def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, models, filename):

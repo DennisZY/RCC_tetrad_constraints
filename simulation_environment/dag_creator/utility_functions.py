@@ -4,6 +4,7 @@ import numpy as np
 from t_separation import is_t_separated
 import graph_examples as ge
 import pandas as pd
+import itertools
 
 # Return a dictionary with (variable,data) key value pairs.
 def get_values(values_df, i, variables):
@@ -51,7 +52,7 @@ def tetrad_pairs(y1, y2, y3, y4):
 
 # TODO function takes m_model for its values, but the function only works on
 # y variables at a time and not all y's at the same time.
-def find_t_separations(m_model, s_model, vars):
+def find_t_separations(m_model, s_model, comb=None):
     nodes = set.union(*m_model.values(), m_model.keys(), *s_model.values(),
                       s_model.keys())
     index_dict = {}
@@ -68,10 +69,19 @@ def find_t_separations(m_model, s_model, vars):
             mL[index_dict[k], index_dict[v]] = True
     graph = (mL, m0)
 
+    # Option to take the t-separation constraints from 1 combination of the model, or all variable combinations in the model.
+    if comb == None:
+        t_sep = []
+        for comb in itertools.combinations(set.union(*m_model.values()), 4):
+            t_separations = build_t_sep_string(comb, index_dict, graph, d)
+            t_sep.append(t_separations)
+    else:
+        t_sep = build_t_sep_string(comb, index_dict, graph, d)
+    return(t_sep)
+
+def build_t_sep_string(comb, index_dict, graph, d):
     t_separations = []
-    # TODO these values are hardcoded, should change this.
-    #for set_of_pairs in all_pairs(list(set.union(*m_model.values()))):
-    for set_of_pairs in tetrad_pairs(vars[0], vars[1], vars[2], vars[3]):
+    for set_of_pairs in tetrad_pairs(comb[0], comb[1], comb[2], comb[3]):
         A = np.zeros(d, dtype=bool)
         B = np.zeros(d, dtype=bool)
         A[index_dict[set_of_pairs[0][0]]] = A[index_dict[set_of_pairs[0][1]]] = True
@@ -80,9 +90,7 @@ def find_t_separations(m_model, s_model, vars):
         t_separations.append(set_of_pairs[0][0] + " " + set_of_pairs[0][1])
         t_separations.append(set_of_pairs[1][0] + " " + set_of_pairs[1][1])
         t_separations.append(is_t_separated(graph, A, B))
-
     return(t_separations)
-
 
 def calculate_tetrad_constraints(covar_matrix):
     tetrad_list = []
@@ -107,11 +115,26 @@ def get_graph_count():
 
 def get_graph_examples(examples=list(range(ge.graph_count()))):
     example_list = []
-    for i in examples:
-        graph_list = eval('ge.example' + str(i))()
-        for g in graph_list:
-            example_list.append(g)
+    example_list.append(ge.example0())
+    example_list.append(ge.example1())
     return(example_list)
+
+    # example_list = []
+    # for i in examples:
+    #     graph_list = eval('ge.example' + str(i))()
+    #     for g in graph_list:
+    #         example_list.append(g)
+    # return(example_list)
+
+def get_graph_examples_impure(examples=list(range(ge.graph_count()))):
+    example_list = []
+    example_list.append(ge.example0())
+    example_list.append(ge.example1())
+    example_list.append(ge.example_cross_construct_impure())
+    example_list.append(ge.example_intra_construct_impure())
+    example_list.append(ge.example_latent_measure_impure())
+    return(example_list)
+
 
 def visualize_graph(m_model, s_model):
     nodes = set.union(*m_model.values(), m_model.keys(), *s_model.values(),

@@ -84,8 +84,6 @@ def generate_data(m_model, s_model, n_samples, b, d, linear = True):
     measure_values = np.zeros([n_samples,len(measure_vars)])
     measure_vars = sorted(list(measure_vars))
 
-    # If there is a measurement and structural model.
-
     # Iterate through exogenous variables
     for exo in exo_vars:
         s_model_values[exo] = noise(n_samples)
@@ -137,17 +135,26 @@ def generate_data_both(n_samples, b, d):
     generate_data_linear(n_samples, b, d, graph_examples.exampleSpirtes())
 
 # Generate a csv of which each row represents an x amount of observations of four variables
-def generate_data_multiple_distributions(n_samples, n_sets, b, d, linearity):
-    models = utility_functions.get_graph_examples()
+def generate_data_multiple_distributions(n_samples, n_dist, b, d, linearity, purity = True):
     graph_str = 'multiple_distributions_Spirtes_'
+    if purity:
+        models_list = utility_functions.get_graph_examples()
+    else:
+        models_list = utility_functions.get_graph_examples_impure()
     csv.make_csv_predefmodel(n_samples, graph_str)
-    for model in models:
-        for m in range(int(n_sets / len(models))):
-            m_model, s_model = model
-            target = utility_functions.find_t_separations(m_model, s_model, ['y1', 'y2', 'y3', 'y4'])
-            values = generate_data(m_model, s_model, n_samples, b, d, linearity)
-            values = utility_functions.restructure_dataframe(values, model)
-            csv.write_csv(values, target, graph_str)
+    for models in models_list:
+        for model in models:
+            if len(models) > n_dist: r = range(1)
+            else: r = range(int(n_dist / len(models)))
+            for m in r:
+                m_model, s_model = model
+                values = sorted(set.union(*m_model.values()))
+                combinations = itertools.combinations(values,4)
+                values = generate_data(m_model, s_model, n_samples, b, d, linearity)
+                for comb in combinations:
+                    target = utility_functions.find_t_separations(m_model, s_model, comb)
+                    value = utility_functions.restructure_dataframe_specific_vars(values, comb)
+                    csv.write_csv(value, target, graph_str)
 
 def generate_data_multiple_distributions_complex_graph(n_samples, n_sets, b, d, nonlinearity, model=graph_examples.exampleSpirtes_simpel()):
     graph_str = 'multiple_distributions_Spirtes_complex_graph_'

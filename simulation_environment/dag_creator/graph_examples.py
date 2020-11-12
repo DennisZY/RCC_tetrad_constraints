@@ -7,35 +7,6 @@ def graph_count():
 # even if this does not make any difference for the distribution, it will
 # generate the same amount of training examples per graph type.
 
-def example3():
-    # Examples with 4 connected latent variables
-    mv = ['y1','y2','y3','y4']
-    models_list = []
-    for perm in itertools.permutations(mv,4):
-        y1 = perm[0]
-        y2 = perm[1]
-        y3 = perm[2]
-        y4 = perm[3]
-        m_model = {'eta1': {y1}, y1: {y2, y3, y4}, y2: {y3, y4},
-                   y3: {y4}}
-        s_model = {}
-        models_list.append((m_model,s_model))
-    return(models_list)
-
-def example2():
-    # Different example of no t-sep.
-    mv = ['y1','y2','y3','y4']
-    models_list = []
-    for perm in itertools.permutations(mv,4):
-        y1 = perm[0]
-        y2 = perm[1]
-        y3 = perm[2]
-        y4 = perm[3]
-        m_model = {'eta1': {y1}, y1: {y2, y3}, y2: {y4},y3: {y4}}
-        s_model = {}
-        models_list.append((m_model,s_model))
-    return(models_list)
-
 def example0():
     # Examples with 2 latents and 2 children each
     mv = ['y1','y2','y3','y4']
@@ -119,7 +90,8 @@ def exampleSpirtes():
                'L4': {'X16','X17','X18','X19','X20','X21'},
                'L5': {'X21','X22','X23','X24','X25'},
                'X1': {'X6'},
-               'X15': {'X19'}}
+               'X15': {'X19'},
+               'X21': {'X22'}}
     return(m_model, s_model)
 
 def exampleSpirtes_simpel():
