@@ -27,10 +27,11 @@ def m_model_mechanism(x):
     return(coef * x)
 
 def m_model_nonlinear_mechanism(x, d):
+    p = np.random.uniform(1,5)
     e = np.random.uniform(0.5, 2)
     f = np.random.uniform(0.5, 2)
     #p = np.random.randint(1, 4)
-    return((1-d) * e * x + d * f * np.power(x,3))
+    return((1-d) * e * x + d * f * np.power(x,int(p)))
 
 # Given a list of variables, calculates their values and the values of all
 # their children, given that values of all their parents are known. Visits
