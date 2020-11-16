@@ -95,7 +95,10 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
         else:
             generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         # generate 10 files with test distributions.
-        generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
+        if linear_train:
+            generate_data_Spirtes.generate_data_linear(nsamp, b, d, test_size, model)
+        else:
+            generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
         train_val = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_values.csv')
         train_target = pd.read_csv(
@@ -186,28 +189,28 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
         model_count += 1
 
     #This should test the Wishart test in the linear case.
-    # for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
-    #     n_samples, b, d = product
-    #     generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
-    #     for n in range(test_size):
-    #         values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
-    #
-    #         acc, tetrad_list, label_list = test_data_single(values, targets)
-    #         trueneg = 0
-    #         falseneg = 0
-    #         truepos = 0
-    #         falsepos = 0
-    #         for i in range(len(label_list)):
-    #             if (label_list[i] == True) and (tetrad_list[i] == True):
-    #                 truepos += 1
-    #             if (label_list[i] == False) and (tetrad_list[i] == True):
-    #                 falseneg += 1
-    #             if (label_list[i] == True) and (tetrad_list[i] == False):
-    #                 falsepos += 1
-    #             if (label_list[i] == False) and (tetrad_list[i] == False):
-    #                 trueneg += 1
-    #
-    #         csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
+    for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
+        n_samples, b, d = product
+        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+        for n in range(test_size):
+            values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+
+            acc, tetrad_list, label_list = test_data_single(values, targets)
+            trueneg = 0
+            falseneg = 0
+            truepos = 0
+            falsepos = 0
+            for i in range(len(label_list)):
+                if (label_list[i] == True) and (tetrad_list[i] == True):
+                    truepos += 1
+                if (label_list[i] == False) and (tetrad_list[i] == True):
+                    falseneg += 1
+                if (label_list[i] == True) and (tetrad_list[i] == False):
+                    falsepos += 1
+                if (label_list[i] == False) and (tetrad_list[i] == False):
+                    trueneg += 1
+
+            csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
 
 
 def spirtes_wishart_poldem():

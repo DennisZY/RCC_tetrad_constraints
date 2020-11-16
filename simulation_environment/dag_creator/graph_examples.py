@@ -17,8 +17,8 @@ def example0():
         y3 = perm[2]
         y4 = perm[3]
         m_model = {'eta1': {y1, y2}, 'eta2': {y3, y4}}
-        s_model = {'x1': {'eta2'}, 'eta1': {'eta2'}}
-        #s_model = {'eta1': {'eta2'}}
+        #s_model = {'x1': {'eta2'}, 'eta1': {'eta2'}}
+        s_model = {'eta1': {'eta2'}}
         models_list.append((m_model,s_model))
     return(models_list)
 
@@ -33,7 +33,8 @@ def example1():
         y3 = perm[2]
         y4 = perm[3]
         m_model = {'eta1': {y1, y2, y3, y4}}
-        s_model = {'x1': {'eta1'}}
+        s_model = {'eta1': {}}
+        #s_model = {'x1': {'eta1'}}
         models_list.append((m_model,s_model))
     return(models_list)
 
@@ -48,7 +49,8 @@ def example_intra_construct_impure():
         y3 = perm[2]
         y4 = perm[3]
         m_model = {'eta1': {y1, y2, y3, y4},y1:{y2}}
-        s_model = {'x1': {'eta1'}}
+        s_model = {'eta1': {}}
+        #s_model = {'x1': {'eta1'}}
         models_list.append((m_model,s_model))
     return(models_list)
 
@@ -62,8 +64,8 @@ def example_cross_construct_impure():
         y3 = perm[2]
         y4 = perm[3]
         m_model = {'eta1': {y1, y2}, 'eta2': {y3, y4}, y1: {y3}}
-        s_model = {'x1': {'eta2'}, 'eta1': {'eta2'}}
-        #s_model = {'eta1': {'eta2'}}
+        #s_model = {'x1': {'eta2'}, 'eta1': {'eta2'}}
+        s_model = {'eta1': {'eta2'}}
         models_list.append((m_model,s_model))
     return(models_list)
 
@@ -78,7 +80,6 @@ def example_latent_measure_impure():
         y5 = perm[4]
         m_model = {'eta1': {y1, y2, y5}, 'eta2': {y3, y4, y5}}
         s_model = {'eta1': {'eta2'}}
-        #s_model = {'eta1': {'eta2'}}
         models_list.append((m_model,s_model))
     return(models_list)
 
