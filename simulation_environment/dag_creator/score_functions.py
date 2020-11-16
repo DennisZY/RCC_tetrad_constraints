@@ -154,7 +154,7 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     model_count = 0
 
-    csv.exp_make_csv_predefmodel(['linear','b','d','nsamples','accuracy','trueneg','falseneg','truepos',
+    csv.exp_make_csv_predefmodel(['linear','b','d','n_samples','accuracy','trueneg','falseneg','truepos',
                                   'falsepos','model_count'],filename)
     for model in models:
         transform_input_data.spirtes_data(*model)
