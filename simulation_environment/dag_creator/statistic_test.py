@@ -71,8 +71,7 @@ def tetrad_test_single(i, j , k, l, cov, alpha, n):
 
     return(test_value > alpha)
 
-def test_data_single(real_values, real_targets):
-    alpha = 0.01
+def test_data_single(real_values, real_targets, alpha):
     real_cov = real_values.cov()
     diff = 0
     label_list = []

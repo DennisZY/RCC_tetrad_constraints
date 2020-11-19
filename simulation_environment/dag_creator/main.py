@@ -3,7 +3,7 @@ import score_functions
 import generate_kme_files
 
 def main():
-    spirtes_wishart()
+    spirtes_nonlin_impure_train()
 
 def spirtes_nonlin_big_graph():
     # Things to vary:
@@ -44,17 +44,17 @@ def spirtes_nonlin():
 
     #model2 = graph_examples.example1()
 
-    linear_train = [True]
-    list_b = [0.01,0.05]
-    list_d = [0.01,0.05]
-    list_E = [100,500,1000]
-    list_K = [100,500,1000]
-    list_KME = ['minimal','marginal'] #['minimal', '4', 'marginal']
+    linear_train = False
+    list_b = [0.1]
+    list_d = [0.1]
+    list_E = [500]
+    list_K = [500]
+    list_KME = ['4'] #['minimal', '4', 'marginal']
     list_nsamples = [50,100,500,1000]
     test_size = 100
     list_ndistributions = [100,500,1000]#[200,1000,4000]
 
-    filename = 'experiment_1_t_sep_extra_kme'
+    filename = 'experiment_1_t_sep'
     print('building file: {}'.format(filename))
     models = graph_examples.example0()
     model = models[0]
@@ -62,7 +62,7 @@ def spirtes_nonlin():
     score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
                                 test_size, list_ndistributions, filename, model)
 
-    filename = 'experiment_3_t_sep_extra_kme'
+    filename = 'experiment_3_t_sep'
     print('building file: {}'.format(filename))
     models = graph_examples.example1()
     model = models[0]
@@ -70,7 +70,7 @@ def spirtes_nonlin():
     score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
                                    test_size, list_ndistributions, filename, model)
 
-    filename = 'experiment_cross_construct_impure_extra_kme'
+    filename = 'experiment_cross_construct_impure'
     print('building file: {}'.format(filename))
     models = graph_examples.example_cross_construct_impure()
     model = models[0]
@@ -78,7 +78,7 @@ def spirtes_nonlin():
     score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
                                    test_size, list_ndistributions, filename, model)
 
-    filename = 'experiment_intra_construct_impure_extra_kme'
+    filename = 'experiment_intra_construct_impure'
     print('building file: {}'.format(filename))
     models = graph_examples.example_intra_construct_impure()
     model = models[0]
@@ -86,7 +86,7 @@ def spirtes_nonlin():
     score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
                                    test_size, list_ndistributions, filename, model)
 
-    filename = 'experiment_latent_measure_impure_extra_kme'
+    filename = 'experiment_latent_measure_impure'
     print('building file: {}'.format(filename))
     models = graph_examples.example_latent_measure_impure()
     model = models[0]
@@ -104,15 +104,23 @@ def spirtes_nonlin_impure_train():
 
     # model2 = graph_examples.example1()
 
-    linear_train = [False]
-    list_b = [0.05]
-    list_d = [0.05]
-    list_E = [100, 500, 1000]
-    list_K = [100, 500, 1000]
+    linear_train = False
+    list_b = [0.1]
+    list_d = [0.1]
+    list_E = [500]
+    list_K = [500]
     list_KME = ['4']  # ['minimal', '4', 'marginal']
     list_nsamples = [50, 100, 500, 1000]
     test_size = 10
     list_ndistributions = [100, 500, 1000]  # [200,1000,4000]
+
+    filename = 'experiment_latent_measure_impure__train'
+    print('building file: {}'.format(filename))
+    models = graph_examples.example_latent_measure_impure()
+    model = models[0]
+
+    score_functions.spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
+                                   test_size, list_ndistributions, filename, model, True)
 
     filename = 'experiment_1_t_sep_impure_train'
     print('building file: {}'.format(filename))
@@ -156,12 +164,21 @@ def spirtes_nonlin_impure_train():
 
 
 def spirtes_wishart():
-    list_b = [0,0.1,0.2]
-    list_d = [0.1,0.2]
+    list_b = [0.1]
+    list_d = [0.1]
     list_n_samples = [50,100,500,1000]
-    test_size = 100
+    test_size = 10
     list_b_lin = [0]
     list_d_lin = [0]
+    alpha = [0.001,0.005,0.01,0.05,0.1]
+
+    # model = [graph_examples.exampleSpirtes()]
+    #
+    # filename = 'wishart_experiment_full_graph'
+    # print('building file: {}'.format(filename))
+    #
+    # score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
+    #                                 model, filename, alpha)
 
     models = graph_examples.example0()
     model = [models[0]]
@@ -170,7 +187,7 @@ def spirtes_wishart():
     print('building file: {}'.format(filename))
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    model, filename, alpha)
 
     models = graph_examples.example1()
     model = [models[0]]
@@ -179,7 +196,7 @@ def spirtes_wishart():
     print('building file: {}'.format(filename))
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    model, filename, alpha)
 
     models = graph_examples.example_cross_construct_impure()
     model = [models[0]]
@@ -188,7 +205,7 @@ def spirtes_wishart():
     print('building file: {}'.format(filename))
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    model, filename, alpha)
 
     models = graph_examples.example_intra_construct_impure()
     model = [models[0]]
@@ -197,7 +214,7 @@ def spirtes_wishart():
     print('building file: {}'.format(filename))
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    model, filename, alpha)
 
     models = graph_examples.example_latent_measure_impure()
     model = [models[0]]
@@ -206,7 +223,7 @@ def spirtes_wishart():
     print('building file: {}'.format(filename))
 
     score_functions.spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size,
-                                    model, filename)
+                                    model, filename, alpha)
 
 
 def score_kme():

@@ -17,9 +17,10 @@ def noise(n):
     return(np.random.normal(0,1,n))
 
 def s_model_mechanism(x, b):
-    a = np.random.uniform(0.25,1)
+    p = np.random.uniform(1,5)
+    a = np.random.uniform(0.5,2)
     c = np.random.uniform(0.5,2)
-    result = a * x + b * c * np.power(x,3)
+    result = (1 - b) * a * x + b * c * np.power(x,p)
     return(result)
 
 def m_model_mechanism(x):

@@ -81,8 +81,6 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
     # Amount of trees in RFC
     # Amount of non-linearity.
 
-    #generate_data_Spirtes.generate_data_multiple_distributions_complex_graph(500, 1000, random, True, model=graph_examples.exampleSpirtes_minimal())
-
     t0 = time.time()
     count = 0
     csv.exp_make_csv_predefmodel(['train_lin','b','d','KME','E', 'K','n_samples','n_distributions','score','trueneg','falseneg','truepos','falsepos'], path)
@@ -153,11 +151,13 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
                 #print()
 
 
-def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, models, filename):
+def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test_size, models, filename,
+                    alphas=[0.01]):
     test_target_path = test_path / 'spirtes_tetrad_constraints_targets.csv'
     model_count = 0
 
-    csv.exp_make_csv_predefmodel(['linear','b','d','n_samples','accuracy','trueneg','falseneg','truepos',
+    csv.exp_make_csv_predefmodel(['linear','b','d','n_samples','alpha','accuracy','trueneg','falseneg',
+                                  'truepos',
                                   'falsepos','model_count'],filename)
     for model in models:
         transform_input_data.spirtes_data(*model)
@@ -166,9 +166,39 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
             n_samples, b, d = product
             generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
             for n in range(test_size):
-                values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+                for alpha in alphas:
+                    values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
 
-                acc, predictions, labels = test_data_single(values, targets)
+                    acc, predictions, labels = test_data_single(values, targets, alpha)
+                    trueneg = 0
+                    falseneg = 0
+                    truepos = 0
+                    falsepos = 0
+                    for i in range(len(labels)):
+                        if (labels[i] == True) and (predictions[i] == True):
+                            truepos += 1
+                        if (labels[i] == False) and (predictions[i] == True):
+                            falsepos += 1
+                        if (labels[i] == True) and (predictions[i] == False):
+                            falseneg += 1
+                        if (labels[i] == False) and (predictions[i] == False):
+                            trueneg += 1
+
+                    csv.exp_write_csv([False, b, d, n_samples, alpha, acc, trueneg, falseneg, truepos,
+                                       falsepos,
+                                       model_count],
+                                      filename)
+        model_count += 1
+
+    #This should test the Wishart test in the linear case.
+    for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
+        n_samples, b, d = product
+        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+        for n in range(test_size):
+            for alpha in alphas:
+                values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
+
+                acc, predictions, labels = test_data_single(values, targets, alpha)
                 trueneg = 0
                 falseneg = 0
                 truepos = 0
@@ -183,34 +213,8 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
                     if (labels[i] == False) and (predictions[i] == False):
                         trueneg += 1
 
-                csv.exp_write_csv([False, b, d, n_samples, acc, trueneg, falseneg, truepos, falsepos,
-                                   model_count],
+                csv.exp_write_csv([True, b,d, n_samples, alpha, acc, trueneg,falseneg,truepos,falsepos],
                                   filename)
-        model_count += 1
-
-    #This should test the Wishart test in the linear case.
-    for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
-        n_samples, b, d = product
-        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
-        for n in range(test_size):
-            values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
-
-            acc, tetrad_list, label_list = test_data_single(values, targets)
-            trueneg = 0
-            falseneg = 0
-            truepos = 0
-            falsepos = 0
-            for i in range(len(label_list)):
-                if (label_list[i] == True) and (tetrad_list[i] == True):
-                    truepos += 1
-                if (label_list[i] == False) and (tetrad_list[i] == True):
-                    falseneg += 1
-                if (label_list[i] == True) and (tetrad_list[i] == False):
-                    falsepos += 1
-                if (label_list[i] == False) and (tetrad_list[i] == False):
-                    trueneg += 1
-
-            csv.exp_write_csv([True, b,d, n_samples, acc, trueneg,falseneg,truepos,falsepos],filename)
 
 
 def spirtes_wishart_poldem():
