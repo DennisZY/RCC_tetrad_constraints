@@ -20,7 +20,7 @@ def s_model_mechanism(x, b):
     p = np.random.uniform(1,5)
     a = np.random.uniform(0.5,2)
     c = np.random.uniform(0.5,2)
-    result = (1 - b) * a * x + b * c * np.power(x,p)
+    result = (1 - b) * a * x + b * c * np.power(x,int(p))
     return(result)
 
 def m_model_mechanism(x):
