@@ -94,32 +94,6 @@ def parameter_search():
     score_functions.iterate_distributions(linear_train, b, d, E, K, KME, n_samples, test_size, filename, model,
                                           True)
 
-def score_kme():
-    linear_train = [False]
-    list_b = [0.05]
-    list_d = [0.05]
-    path = 'experiment_general'
-    list_E = [500]
-    list_K = [500]
-    list_KME = ['4']  # ['minimal', '4', 'marginal']
-    list_nsamples = [100]
-    test_size = 1
-    list_ndistributions = [1000]  # [200,1000,4000]
-
-    score_functions.score_kme(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamples,
-                              test_size, list_ndistributions, path)
-
-def create_kme():
-    model = graph_examples.exampleSpirtes()
-
-    list_b = [0.1]
-    list_d = [0.01, 0.1]
-    list_K = [100, 500, 1000]
-    list_KME = ['4']  # ['minimal', '4', 'marginal']
-    list_nsamples = [100, 1000, 10000]
-    test_size = 10
-
-    generate_kme_files.generate_KME(list_b, list_d, list_K, list_KME, list_nsamples, test_size, model)
 
 
 if __name__ == "__main__":

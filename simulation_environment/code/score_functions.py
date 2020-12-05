@@ -1,5 +1,5 @@
 import randomized_causation_coefficient as rcc
-import generate_data_Spirtes
+import generate_data
 import time
 import itertools
 import csv_functions as csv
@@ -89,15 +89,15 @@ def spirtes_nonlin(linear_train, list_b, list_d, list_E, list_K, list_KME, list_
     for prod in itertools.product(list_nsamples, list_ndistributions,list_b,list_d):
         nsamp, ndist, b, d = prod
         if impure_train:
-            generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train, False)
+            generate_data.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train, False)
         else:
-            generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
+            generate_data.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
 
         # generate 10 files with test distributions.
         if linear_train:
-            generate_data_Spirtes.generate_data_linear(nsamp, b, d, test_size, model)
+            generate_data.generate_data_linear(nsamp, b, d, test_size, model)
         else:
-            generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
+            generate_data.generate_data_nonlinear(nsamp, b, d, test_size, model)
         train_val = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_values.csv')
         train_target = pd.read_csv(
@@ -168,7 +168,7 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
         targets = pd.read_csv(test_target_path)
         for product in itertools.product(list_n_samples, list_b, list_d):
             n_samples, b, d = product
-            generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
+            generate_data.generate_data_nonlinear(n_samples, b, d, test_size, model)
             for n in range(test_size):
                 for alpha in alphas:
                     values = pd.read_csv(test_path / 'spirtes_nonlin_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
@@ -197,7 +197,7 @@ def spirtes_wishart(list_b, list_d, list_b_lin, list_d_lin, list_n_samples, test
     #This should test the Wishart test in the linear case.
     for product in itertools.product(list_n_samples, list_b_lin, list_d_lin):
         n_samples, b, d = product
-        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+        generate_data.generate_data_linear(n_samples, b, d, test_size, model)
         for n in range(test_size):
             for alpha in alphas:
                 values = pd.read_csv(test_path / 'spirtes_random_b{}_d{}_samples{}_n{}.csv'.format(b, d, n_samples, n))
@@ -258,7 +258,7 @@ def score_kme(linear_train, list_b, list_d, list_E, list_K, list_KME, list_nsamp
          'falseneg', 'truepos', 'falsepos'], path)
     for prod in itertools.product(list_nsamples, list_ndistributions, list_b, list_d):
         nsamp, ndist, b, d = prod
-        generate_data_Spirtes.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
+        generate_data.generate_data_multiple_distributions(nsamp, ndist, b, d, linear_train)
         train_val = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_values.csv')
         train_target = pd.read_csv(
@@ -316,9 +316,9 @@ def iterate_distributions(linear_train, b, d, E, K, KME, n_samples, test_size,pa
 
     # generate 10 files with test distributions.
     if linear_train:
-        generate_data_Spirtes.generate_data_linear(n_samples, b, d, test_size, model)
+        generate_data.generate_data_linear(n_samples, b, d, test_size, model)
     else:
-        generate_data_Spirtes.generate_data_nonlinear(n_samples, b, d, test_size, model)
+        generate_data.generate_data_nonlinear(n_samples, b, d, test_size, model)
     test_target = pd.read_csv(test_path /
                               'spirtes_tetrad_constraints_targets.csv')
 
@@ -336,9 +336,9 @@ def iterate_distributions(linear_train, b, d, E, K, KME, n_samples, test_size,pa
     while n_distributions < 10000:
         print("n_distributions: {}".format(n_distributions))
         if impure_train:
-            generate_data_Spirtes.generate_data_multiple_distributions(n_samples, n_distributions, b, d, linear_train, False)
+            generate_data.generate_data_multiple_distributions(n_samples, n_distributions, b, d, linear_train, False)
         else:
-            generate_data_Spirtes.generate_data_multiple_distributions(n_samples, n_distributions, b, d, linear_train)
+            generate_data.generate_data_multiple_distributions(n_samples, n_distributions, b, d, linear_train)
         train_val = pd.read_csv(
             train_path / 'multiple_distributions_Spirtes_gen_values.csv')
         train_target = pd.read_csv(

@@ -1,5 +1,5 @@
 import randomized_causation_coefficient as rcc
-import generate_data_Spirtes
+import generate_data
 import pandas as pd
 import itertools
 from pathlib import Path
@@ -23,7 +23,7 @@ def generate_KME(list_b, list_d, list_K, list_KME, list_nsamples, test_size, mod
     for prod in itertools.product(list_nsamples,list_b,list_d):
         nsamp, b, d = prod
         # generate 10 files with test distributions.
-        generate_data_Spirtes.generate_data_nonlinear(nsamp, b, d, test_size, model)
+        generate_data.generate_data_nonlinear(nsamp, b, d, test_size, model)
         for product in list(itertools.product(list_KME, list_K)):
             count += 1
             print('Count: {}'.format(count))
