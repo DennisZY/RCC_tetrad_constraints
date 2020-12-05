@@ -12,3 +12,5 @@ This is the code for the experiments in my thesis. The main.py file contains mul
 - alpha: the significance level of the Wishart test.
 - impure_train: When set to true, training data is also sampled from graphs that contain an impurity.
 - linear_train: When set to true, the data is generated with linear functions. Otherwise it is generated with non-linear functions.
+
+The results will be loaded in a CSV file in the experiment_results folder.
